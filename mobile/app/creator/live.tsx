@@ -15,7 +15,6 @@ import {
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { LiveKitRoom, VideoView, useLocalParticipant } from '@livekit/react-native';
 import { useStreamStore } from '@/store/streamStore';
 import { useChat } from '@/hooks/useChat';
 import { ChatBubble } from '@/components/streams/ChatBubble';
@@ -26,6 +25,21 @@ import { Colors, Spacing, Typography, Radius, Shadows } from '@/constants/theme'
 import { formatViewerCount, formatDuration } from '@/utils/format';
 import { useAuthStore } from '@/store/authStore';
 import { useAlert } from '@/template';
+
+let LiveKitRoom: any = null;
+let VideoView: any = null;
+let useLocalParticipant: any = () => ({ localParticipant: null });
+let webRTCAvailable = false;
+
+try {
+  const livekit = require('@livekit/react-native');
+  LiveKitRoom = livekit.LiveKitRoom;
+  VideoView = livekit.VideoView;
+  useLocalParticipant = livekit.useLocalParticipant;
+  webRTCAvailable = true;
+} catch (_e) {
+  
+}
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PREVIEW_HEIGHT = SCREEN_HEIGHT * 0.35;
@@ -130,7 +144,7 @@ export default function CreatorLiveScreen() {
     >
       {}
       <View style={[styles.preview, { height: PREVIEW_HEIGHT }]}>
-        {activeStream.livekitToken ? (
+        {webRTCAvailable && activeStream.livekitToken ? (
           <LiveKitRoom
             serverUrl={LIVEKIT_URL}
             token={activeStream.livekitToken}
