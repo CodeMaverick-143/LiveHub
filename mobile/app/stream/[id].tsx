@@ -25,7 +25,22 @@ import { Toast } from '@/components/ui/Toast';
 import { Colors, Spacing, Typography, Radius, Shadows } from '@/constants/theme';
 import { formatViewerCount, formatDuration } from '@/utils/format';
 import { useAuthStore } from '@/store/authStore';
-import { LiveKitRoom, VideoView, useTracks } from '@livekit/react-native';
+import { socketService } from '@/services/socketService';
+
+let LiveKitRoom: any = null;
+let VideoView: any = null;
+let useTracks: any = () => [];
+let webRTCAvailable = false;
+
+try {
+  const livekit = require('@livekit/react-native');
+  LiveKitRoom = livekit.LiveKitRoom;
+  VideoView = livekit.VideoView;
+  useTracks = livekit.useTracks;
+  webRTCAvailable = true;
+} catch (_e) {
+  
+}
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const VIDEO_HEIGHT = SCREEN_HEIGHT * 0.38;
@@ -63,7 +78,28 @@ export default function WatchStreamScreen() {
 
   const [input, setInput] = useState('');
   const [toast, setToast] = useState<string | null>(null);
+  const [streamEnded, setStreamEnded] = useState(false);
   const flatListRef = useRef<FlatList>(null);
+
+  
+  useEffect(() => {
+    if (!id) return;
+
+    const handleStreamEnded = (payload: { streamId: string }) => {
+      if (payload.streamId === id) {
+        setStreamEnded(true);
+        
+        setTimeout(() => {
+          router.back();
+        }, 3000);
+      }
+    };
+
+    socketService.on('stream-ended', handleStreamEnded);
+    return () => {
+      socketService.off('stream-ended', handleStreamEnded as (data: unknown) => void);
+    };
+  }, [id, router]);
 
   
   useEffect(() => {
@@ -90,7 +126,7 @@ export default function WatchStreamScreen() {
     >
       {}
       <View style={[styles.videoArea, { height: VIDEO_HEIGHT }]}>
-        {stream?.livekitToken ? (
+        {webRTCAvailable && stream?.livekitToken ? (
           <LiveKitRoom
             serverUrl={LIVEKIT_URL}
             token={stream.livekitToken}
@@ -224,6 +260,17 @@ export default function WatchStreamScreen() {
 
       {toast ? (
         <Toast message={toast} variant="error" onDismiss={() => setToast(null)} />
+      ) : null}
+
+      {}
+      {streamEnded ? (
+        <View style={styles.streamEndedOverlay}>
+          <View style={styles.streamEndedCard}>
+            <MaterialIcons name="videocam-off" size={48} color={Colors.textMuted} />
+            <Text style={styles.streamEndedTitle}>Stream has ended</Text>
+            <Text style={styles.streamEndedSub}>Returning to home...</Text>
+          </View>
+        </View>
       ) : null}
     </KeyboardAvoidingView>
   );
@@ -377,6 +424,34 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   placeholderText: {
+    fontSize: Typography.sm,
+    color: Colors.textMuted,
+    includeFontPadding: false,
+  },
+  streamEndedOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.82)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 100,
+  },
+  streamEndedCard: {
+    alignItems: 'center',
+    gap: Spacing.md,
+    padding: Spacing.xl,
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    width: '75%',
+  },
+  streamEndedTitle: {
+    fontSize: Typography.lg,
+    fontWeight: Typography.bold,
+    color: Colors.textPrimary,
+    includeFontPadding: false,
+  },
+  streamEndedSub: {
     fontSize: Typography.sm,
     color: Colors.textMuted,
     includeFontPadding: false,
