@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Platform, Alert } from 'react-native';
 import { AlertButton, AlertState } from './types';
