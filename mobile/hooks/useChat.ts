@@ -48,14 +48,18 @@ export function useChat(streamId: string) {
     if (!streamId || !user) return;
 
     socketService.connect();
-    socketService.emit('join-stream', { streamId, userId: user.id });
+    socketService.joinStream(streamId, user.id);
 
     const handleMessage = (msg: ChatMessage) => {
       setMessages((prev) => {
-        
-        if (prev.some((m) => m.id === msg.id)) return prev;
+        if (prev.some((m) => m.id === msg.id || (msg.uuid && m.uuid === msg.uuid))) {
+          return prev.map((m) =>
+            m.uuid === msg.uuid || m.id === msg.id
+              ? { ...m, ...msg, synced: true, pending: false }
+              : m
+          );
+        }
         const next = [...prev, msg];
-        
         return next.slice(-Config.CHAT_MAX);
       });
     };
@@ -70,7 +74,7 @@ export function useChat(streamId: string) {
     socketService.on('viewer-count', handleViewerCount);
 
     return () => {
-      socketService.emit('leave-stream', { streamId, userId: user.id });
+      socketService.leaveStream(streamId, user.id);
       socketService.off('receive-message', handleMessage as (data: unknown) => void);
       socketService.off('viewer-count', handleViewerCount as (data: unknown) => void);
     };

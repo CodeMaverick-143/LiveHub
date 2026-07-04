@@ -1,8 +1,8 @@
 
 
 export const Config = {
-  BASE_URL: 'http://localhost:3000',
-  SOCKET_URL: 'http://localhost:3000',
+  BASE_URL: 'http://10.179.244.31:3000',
+  SOCKET_URL: 'http://10.179.244.31:3000',
 
   
   LIVEKIT_URL: 'wss://your-livekit-cloud.livekit.cloud',
