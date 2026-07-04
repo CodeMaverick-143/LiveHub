@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { AuthUser, SendOTPOptions, SignUpResult, GoogleSignInResult } from '../types';
 import { safeSupabaseOperation, getSharedSupabaseClient } from '../../core/client';
 import { configManager } from '../../core/config';
@@ -451,7 +451,7 @@ export class AuthService {
     try {
       
       const redirectUrl = AuthSession.makeRedirectUri({
-        scheme: 'onspaceapp',
+        scheme: 'livehub',
         path: 'auth'
       });
 
