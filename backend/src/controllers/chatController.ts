@@ -1,7 +1,13 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { Server } from 'socket.io';
 
 const prisma = new PrismaClient();
+
+let _io: Server | null = null;
+export function setChatIo(io: Server) {
+  _io = io;
+}
 
 export async function fetchChatHistory(req: Request, res: Response) {
   try {
@@ -51,6 +57,11 @@ export async function sendChatMessage(req: Request, res: Response) {
         message,
       },
     });
+
+    
+    if (_io) {
+      _io.to(streamId).emit('receive-message', msg);
+    }
 
     return res.json({ success: true, data: msg });
   } catch (error: any) {
