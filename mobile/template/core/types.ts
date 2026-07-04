@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 
 export interface SupabaseConfig {
   url: string;
@@ -31,7 +31,7 @@ export interface ModuleConfig {
 }
 
 
-export interface OnSpaceConfig extends ModuleConfig {
+export interface LiveHubConfig extends ModuleConfig {
   supabase: SupabaseConfig;
 }
 
@@ -39,11 +39,11 @@ export interface OnSpaceConfig extends ModuleConfig {
 export interface SDKState {
   initialized: boolean;
   enabledModules: string[];
-  config: OnSpaceConfig;
+  config: LiveHubConfig;
 }
 
 
-export interface OnSpaceError {
+export interface LiveHubError {
   code: string;
   message: string;
   module?: string;
