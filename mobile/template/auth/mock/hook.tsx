@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { AuthContextType, SendOTPResult, AuthResult, LogoutResult, SignUpResult } from '../types';
 import { mockAuthService } from './service';
 import { useMockAuthContext } from './context';
