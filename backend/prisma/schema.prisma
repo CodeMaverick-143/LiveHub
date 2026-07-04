@@ -1,0 +1,48 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String        @id @default(uuid())
+  username  String        @unique
+  password  String
+  role      String
+  createdAt DateTime      @default(now())
+  streams   Stream[]
+  messages  ChatMessage[]
+}
+
+model Stream {
+  id           String        @id @default(uuid())
+  creatorId    String
+  creatorName  String
+  title        String
+  roomName     String
+  livekitRoom  String
+  status       String        @default("live")
+  viewerCount  Int           @default(0)
+  startedAt    DateTime      @default(now())
+  endedAt      DateTime?
+  category     String        @default("Live")
+  creator      User          @relation(fields: [creatorId], references: [id])
+  messages     ChatMessage[]
+}
+
+model ChatMessage {
+  id         String   @id @default(uuid())
+  uuid       String   @unique
+  deviceId   String?
+  streamId   String
+  senderId   String
+  senderName String
+  message    String
+  createdAt  DateTime @default(now())
+
+  stream     Stream   @relation(fields: [streamId], references: [id])
+  sender     User     @relation(fields: [senderId], references: [id])
+}
