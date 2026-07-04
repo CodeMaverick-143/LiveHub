@@ -10,9 +10,14 @@ import { useAuthStore } from '@/store/authStore';
 import GestureProvider from '@/components/providers/GestureProvider';
 import { StyleSheet } from 'react-native';
 import { Colors } from '@/constants/theme';
-import { registerGlobals } from '@livekit/react-native';
-
-registerGlobals();
+try {
+  const { registerGlobals } = require('@livekit/react-native');
+  registerGlobals();
+} catch (_e) {
+  
+  
+  console.warn('[LiveHub] WebRTC native module unavailable – streaming features require a dev build.');
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
