@@ -13,10 +13,12 @@ import {
   listStreams,
   getStreamDetail,
   endStream,
+  setStreamIo,
 } from './controllers/streamController';
 import {
   fetchChatHistory,
   sendChatMessage,
+  setChatIo,
 } from './controllers/chatController';
 import { registerSocketHandlers } from './sockets/socketHandler';
 
@@ -50,6 +52,10 @@ app.post('/chat', sendChatMessage);
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });
+
+
+setStreamIo(io);
+setChatIo(io);
 
 
 registerSocketHandlers(io);
