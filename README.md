@@ -2,6 +2,10 @@
 
 MVP built with React Native (Expo) + TypeScript.
 
+## Demo
+
+[Watch the Demo Video](https://drive.google.com/file/d/1CVax-ELf2DwP9T9jpAdtJSGfjTIFOwKD/view?usp=sharing)
+
 ## Architecture
 
 ```
@@ -14,32 +18,36 @@ Screens           →  app/          (Expo Router pages)
 
 ## Tech Stack
 
-| Layer       | Technology                        |
-|-------------|-----------------------------------|
-| Framework   | React Native + Expo SDK           |
-| Navigation  | Expo Router (file-based)          |
-| State       | Zustand                           |
-| Data        | TanStack React Query              |
-| Offline     | AsyncStorage + NetInfo            |
-| Real-time   | Socket.IO (mocked in MVP)         |
-| Streaming   | LiveKit Cloud (mocked in MVP)     |
-| Forms       | React Hook Form                   |
-| Animations  | React Native Reanimated           |
+| Layer      | Technology                    |
+| ---------- | ----------------------------- |
+| Framework  | React Native + Expo SDK       |
+| Navigation | Expo Router (file-based)      |
+| State      | Zustand                       |
+| Data       | TanStack React Query          |
+| Offline    | AsyncStorage + NetInfo        |
+| Real-time  | Socket.IO (mocked in MVP)     |
+| Streaming  | LiveKit Cloud (mocked in MVP) |
+| Forms      | React Hook Form               |
+| Animations | React Native Reanimated       |
 
 ## Screens
 
 ### Authentication
+
 - `/login` — Role selection (Creator / Viewer) + mock login
 
 ### Viewer Flow
+
 - `/(tabs)` — Browse live streams with search + category filter
 - `/stream/[id]` — Full-screen watch view + live chat
 
 ### Creator Flow
+
 - `/(tabs)/creator` — Creator dashboard + start stream
 - `/creator/live` — Live stream management (mic/cam controls, end stream, chat)
 
 ### Shared
+
 - `/(tabs)/profile` — User stats + logout
 
 ## Phase 1 Features (Implemented)
@@ -68,44 +76,47 @@ Screens           →  app/          (Expo Router pages)
 ## Replacing Mocks with Real Backend
 
 ### 1. REST API
+
 Edit `services/apiService.ts` → replace `delay()` mock functions with real `fetch()` calls to your Express backend at `Config.BASE_URL`.
 
 ### 2. Socket.IO
+
 Edit `services/socketService.ts` → replace mock interval logic with real `socket.io-client` connection to `Config.SOCKET_URL`.
 
 ```typescript
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
 const socket = io(Config.SOCKET_URL, { auth: { token } });
 ```
 
 ### 3. LiveKit Video
+
 In `app/creator/live.tsx` → replace the camera placeholder view with LiveKit React Native SDK's `<VideoView>` using the `livekitToken` from `startStreamApi()`.
 
 ## Backend API Contract
 
-| Method | Endpoint          | Description        |
-|--------|-------------------|--------------------|
-| POST   | /auth/login       | Login              |
-| GET    | /streams          | List live streams  |
-| GET    | /streams/:id      | Get stream detail  |
-| POST   | /streams/start    | Creator: go live   |
-| POST   | /streams/end      | Creator: end       |
-| GET    | /chat/:streamId   | Chat history       |
-| POST   | /chat             | Send message       |
+| Method | Endpoint        | Description       |
+| ------ | --------------- | ----------------- |
+| POST   | /auth/login     | Login             |
+| GET    | /streams        | List live streams |
+| GET    | /streams/:id    | Get stream detail |
+| POST   | /streams/start  | Creator: go live  |
+| POST   | /streams/end    | Creator: end      |
+| GET    | /chat/:streamId | Chat history      |
+| POST   | /chat           | Send message      |
 
 ## Socket.IO Events
 
-| Direction       | Event            | Payload                              |
-|----------------|------------------|--------------------------------------|
-| Client→Server  | join-stream      | `{ streamId, userId }`               |
-| Client→Server  | leave-stream     | `{ streamId, userId }`               |
-| Client→Server  | send-message     | `{ streamId, message, uuid, ... }`   |
-| Client→Server  | start-stream     | `{ creatorId, title }`               |
-| Client→Server  | end-stream       | `{ streamId, creatorId }`            |
-| Server→Client  | viewer-count     | `{ streamId, count }`                |
-| Server→Client  | receive-message  | `ChatMessage`                        |
-| Server→Client  | stream-started   | `{ streamId }`                       |
-| Server→Client  | stream-ended     | `{ streamId }`                       |
+| Direction     | Event           | Payload                            |
+| ------------- | --------------- | ---------------------------------- |
+| Client→Server | join-stream     | `{ streamId, userId }`             |
+| Client→Server | leave-stream    | `{ streamId, userId }`             |
+| Client→Server | send-message    | `{ streamId, message, uuid, ... }` |
+| Client→Server | start-stream    | `{ creatorId, title }`             |
+| Client→Server | end-stream      | `{ streamId, creatorId }`          |
+| Server→Client | viewer-count    | `{ streamId, count }`              |
+| Server→Client | receive-message | `ChatMessage`                      |
+| Server→Client | stream-started  | `{ streamId }`                     |
+| Server→Client | stream-ended    | `{ streamId }`                     |
 
 ## Demo Credentials
 
