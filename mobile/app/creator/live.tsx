@@ -25,6 +25,7 @@ import { Colors, Spacing, Typography, Radius, Shadows } from '@/constants/theme'
 import { formatViewerCount, formatDuration } from '@/utils/format';
 import { useAuthStore } from '@/store/authStore';
 import { useAlert } from '@/template';
+import { useOfflineQueue } from '@/hooks/useOfflineQueue';
 
 let LiveKitRoom: any = null;
 let VideoView: any = null;
@@ -38,7 +39,7 @@ try {
   useLocalParticipant = livekit.useLocalParticipant;
   webRTCAvailable = true;
 } catch (_e) {
-  
+
 }
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -74,6 +75,7 @@ export default function CreatorLiveScreen() {
 
   const streamId = activeStream?.id ?? '';
   const { messages, viewerCount, sendMessage, isSending } = useChat(streamId);
+  const { isOnline } = useOfflineQueue();
 
   const [input, setInput] = useState('');
   const [toast, setToast] = useState<{ msg: string; variant: 'success' | 'error' } | null>(null);
@@ -82,7 +84,7 @@ export default function CreatorLiveScreen() {
   const flatListRef = useRef<FlatList>(null);
   const durationRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
-  
+
   useEffect(() => {
     durationRef.current = setInterval(() => {
       incrementDuration();
@@ -92,7 +94,16 @@ export default function CreatorLiveScreen() {
     };
   }, []);
 
-  
+
+  useEffect(() => {
+    if (!isOnline) {
+      setToast({ msg: 'You are offline. Sending messages will queue them.', variant: 'error' });
+    } else {
+      setToast(null);
+    }
+  }, [isOnline]);
+
+
   useEffect(() => {
     if (messages.length > 0) {
       setTimeout(() => {
@@ -101,7 +112,7 @@ export default function CreatorLiveScreen() {
     }
   }, [messages.length]);
 
-  
+
   useEffect(() => {
     if (!activeStream && !isLoading) {
       router.replace('/(tabs)/creator');
@@ -132,7 +143,7 @@ export default function CreatorLiveScreen() {
     if (!text) return;
     setInput('');
     const ok = await sendMessage(text);
-    if (!ok) setToast({ msg: 'Failed to send message', variant: 'error' });
+    if (!ok && isOnline) setToast({ msg: 'Failed to send message', variant: 'error' });
   };
 
   if (!activeStream) return null;
@@ -142,7 +153,7 @@ export default function CreatorLiveScreen() {
       style={[styles.root, { paddingTop: insets.top }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      {}
+
       <View style={[styles.preview, { height: PREVIEW_HEIGHT }]}>
         {webRTCAvailable && activeStream.livekitToken ? (
           <LiveKitRoom
@@ -169,24 +180,30 @@ export default function CreatorLiveScreen() {
         )}
         <View style={styles.previewOverlay} />
 
-        {}
+
         <View style={styles.topLeft}>
-          <Badge variant="live" label="LIVE" />
+          {isOnline ? (
+            <Badge variant="live" label="LIVE" />
+          ) : (
+            <Badge variant="pending" label="Offline" icon="cloud-off" />
+          )}
           <View style={styles.durationPill}>
             <Text style={styles.durationText}>{formatDuration(activeStream.startedAt)}</Text>
           </View>
         </View>
 
-        {}
+
         <View style={styles.topRight}>
-          <Badge
-            variant="viewers"
-            label={formatViewerCount(viewerCount || activeStream.viewerCount)}
-            icon="visibility"
-          />
+          {isOnline ? (
+            <Badge
+              variant="viewers"
+              label={formatViewerCount(viewerCount || activeStream.viewerCount)}
+              icon="visibility"
+            />
+          ) : null}
         </View>
 
-        {}
+
         <View style={styles.controls}>
           <Pressable
             style={[styles.controlBtn, isMuted && styles.controlBtnActive]}
@@ -223,14 +240,14 @@ export default function CreatorLiveScreen() {
         </View>
       </View>
 
-      {}
+
       <View style={styles.titleRow}>
         <Text style={styles.streamTitle} numberOfLines={1}>
           {activeStream.title}
         </Text>
       </View>
 
-      {}
+
       <View style={styles.chatSection}>
         <View style={styles.chatHeader}>
           <MaterialIcons name="chat" size={16} color={Colors.textSecondary} />
@@ -252,7 +269,7 @@ export default function CreatorLiveScreen() {
           }
         />
 
-        {}
+
         <View
           style={[
             styles.inputRow,
@@ -305,7 +322,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
 
-  
+
   preview: {
     backgroundColor: '#000',
     position: 'relative',
@@ -387,7 +404,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.error,
   },
 
-  
+
   titleRow: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm + 2,
@@ -402,7 +419,7 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
 
-  
+
   chatSection: {
     flex: 1,
     backgroundColor: Colors.surface,
@@ -432,7 +449,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
   },
 
-  
+
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',

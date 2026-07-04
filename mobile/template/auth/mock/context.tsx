@@ -45,15 +45,15 @@ export function MockAuthProvider({ children }: MockAuthProviderProps) {
     let isMounted = true;
     let authSubscription: any = null;
 
-    const initializeMockAuth = async () => {      
+    const initializeMockAuth = async () => {
       try {
         const currentUser = await mockAuthService.getCurrentUser();
-        
+
         if (isMounted) {
-          updateState({ 
-            user: currentUser, 
-            loading: false, 
-            initialized: true 
+          updateState({
+            user: currentUser,
+            loading: false,
+            initialized: true
           });
         }
 
@@ -66,10 +66,10 @@ export function MockAuthProvider({ children }: MockAuthProviderProps) {
       } catch (error) {
         console.warn('[SDK:MockAuthProvider] Mock auth initialization failed:', error);
         if (isMounted) {
-          updateState({ 
-            user: null, 
-            loading: false, 
-            initialized: true 
+          updateState({
+            user: null,
+            loading: false,
+            initialized: true
           });
         }
       }
@@ -99,10 +99,10 @@ export function MockAuthProvider({ children }: MockAuthProviderProps) {
 
 export function useMockAuthContext(): MockAuthContextType {
   const context = useContext(MockAuthContext);
-  
+
   if (context === undefined) {
     throw new Error('useMockAuthContext must be used within a MockAuthProvider');
   }
-  
+
   return context;
 }

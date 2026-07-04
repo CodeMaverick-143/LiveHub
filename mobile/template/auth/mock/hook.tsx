@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 
 export function useMockAuth(): AuthContextType {
   const context = useMockAuthContext();
-  
+
   const sendOTP = async (email: string): Promise<SendOTPResult> => {
     context.setOperationLoading(true);
     try {
@@ -62,7 +62,7 @@ export function useMockAuth(): AuthContextType {
   const signInWithGoogle = async (): Promise<AuthResult> => {
     context.setOperationLoading(true);
     try {
-      
+
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('[SDK:useMockAuth] Mock Google Sign-In - not implemented in mock mode');
       return { error: 'Google Sign-In not available in mock mode', user: null };
@@ -75,12 +75,12 @@ export function useMockAuth(): AuthContextType {
     context.setOperationLoading(true);
     try {
       const result = await mockAuthService.logout();
-      
+
       if (!result) {
         console.warn('[SDK:useMockAuth] Invalid logout result format:', result);
         return { error: 'Invalid logout response' };
       }
-      
+
       return result;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown logout error';
@@ -117,21 +117,21 @@ export function useMockAuth(): AuthContextType {
 
 export function useMockAuthDebug() {
   const [debugInfo, setDebugInfo] = useState<any>(null);
-  
+
   const refreshDebugInfo = async () => {
     const info = await mockAuthService.getMockDebugInfo();
     setDebugInfo(info);
   };
-  
+
   const clearAllData = async () => {
     await mockAuthService.clearAllMockData();
     await refreshDebugInfo();
   };
-  
+
   useEffect(() => {
     refreshDebugInfo();
   }, []);
-  
+
   return {
     debugInfo,
     refreshDebugInfo,

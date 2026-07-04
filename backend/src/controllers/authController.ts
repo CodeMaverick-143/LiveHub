@@ -18,13 +18,13 @@ export async function login(req: Request, res: Response) {
       return res.status(400).json({ success: false, error: 'Password must be at least 4 characters' });
     }
 
-    
+
     let user = await prisma.user.findUnique({
       where: { username },
     });
 
     if (!user) {
-      
+
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
       user = await prisma.user.create({
@@ -35,13 +35,13 @@ export async function login(req: Request, res: Response) {
         },
       });
     } else {
-      
+
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res.status(401).json({ success: false, error: 'Invalid credentials' });
       }
-      
-      
+
+
       if (user.role !== role) {
         user = await prisma.user.update({
           where: { id: user.id },
@@ -50,7 +50,7 @@ export async function login(req: Request, res: Response) {
       }
     }
 
-    
+
     const token = jwt.sign(
       { id: user.id, username: user.username, role: user.role },
       JWT_SECRET,

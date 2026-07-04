@@ -65,10 +65,10 @@ export default function ProfileScreen() {
         contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + Spacing.xl }]}
         showsVerticalScrollIndicator={false}
       >
-        {}
+
         <Text style={styles.pageTitle}>Profile</Text>
 
-        {}
+
         <View style={styles.profileCard}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>
@@ -93,7 +93,7 @@ export default function ProfileScreen() {
           ) : null}
         </View>
 
-        {}
+
         <View style={styles.statsRow}>
           {stats.map((stat) => (
             <View key={stat.label} style={styles.statCard}>
@@ -104,7 +104,7 @@ export default function ProfileScreen() {
           ))}
         </View>
 
-        {}
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account</Text>
           {[
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
 
-  
+
   profileCard: {
     backgroundColor: Colors.surface,
     borderRadius: Radius.md,
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
 
-  
+
   statsRow: {
     flexDirection: 'row',
     gap: Spacing.sm,
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-  
+
   section: {
     backgroundColor: Colors.surface,
     borderRadius: Radius.md,

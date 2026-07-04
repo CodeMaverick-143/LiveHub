@@ -37,13 +37,13 @@ export async function sendChatMessage(req: Request, res: Response) {
       return res.status(400).json({ success: false, error: 'streamId, senderId, senderName, message, and uuid are required' });
     }
 
-    
+
     const existing = await prisma.chatMessage.findUnique({
       where: { uuid },
     });
 
     if (existing) {
-      
+
       return res.json({ success: true, data: existing, deduplicated: true });
     }
 
@@ -58,14 +58,14 @@ export async function sendChatMessage(req: Request, res: Response) {
       },
     });
 
-    
+
     if (_io) {
       _io.to(streamId).emit('receive-message', msg);
     }
 
     return res.json({ success: true, data: msg });
   } catch (error: any) {
-    
+
     if (error.code === 'P2002') {
       const existing = await prisma.chatMessage.findUnique({
         where: { uuid: req.body.uuid },

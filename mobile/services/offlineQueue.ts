@@ -19,24 +19,24 @@ class OfflineQueueService {
     return OfflineQueueService.instance;
   }
 
-  
+
   async load(): Promise<void> {
     const saved = await storage.get<QueuedMessage[]>(Config.OFFLINE_QUEUE_KEY);
     this.queue = saved ?? [];
   }
 
-  
+
   async enqueue(message: QueuedMessage): Promise<void> {
     this.queue.push(message);
     await this._persist();
   }
 
-  
+
   getPending(): QueuedMessage[] {
     return this.queue.filter((m) => !m.synced);
   }
 
-  
+
   async sync(): Promise<{ synced: number; failed: number }> {
     if (this.isSyncing) return { synced: 0, failed: 0 };
     this.isSyncing = true;
@@ -57,7 +57,7 @@ class OfflineQueueService {
         });
 
         if (res.success) {
-          
+
           this.queue = this.queue.filter((m) => m.uuid !== msg.uuid);
           synced++;
         } else {
@@ -74,13 +74,13 @@ class OfflineQueueService {
     return { synced, failed };
   }
 
-  
+
   async clearSynced(): Promise<void> {
     this.queue = this.queue.filter((m) => !m.synced);
     await this._persist();
   }
 
-  
+
   get length(): number {
     return this.queue.length;
   }

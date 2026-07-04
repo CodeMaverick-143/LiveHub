@@ -1,9 +1,6 @@
-/**
- * LiveHub — Shared TypeScript types
- * Mirrors the backend MongoDB schema exactly
- */
 
-// ─── Auth ───────────────────────────────────────────────────────────────────
+
+
 
 export type UserRole = 'creator' | 'viewer';
 
@@ -20,7 +17,7 @@ export interface AuthState {
   isAuthenticated: boolean;
 }
 
-// ─── Streams ─────────────────────────────────────────────────────────────────
+
 
 export type StreamStatus = 'live' | 'ended' | 'scheduled';
 
@@ -39,7 +36,7 @@ export interface Stream {
   endedAt?: string;
 }
 
-// ─── Chat ─────────────────────────────────────────────────────────────────────
+
 
 export interface ChatMessage {
   id: string;
@@ -48,14 +45,14 @@ export interface ChatMessage {
   senderName: string;
   message: string;
   createdAt: string;
-  // Phase 2 offline fields
+
   uuid?: string;
   deviceId?: string;
   synced?: boolean;
   pending?: boolean;
 }
 
-// ─── Offline Queue (Phase 2) ──────────────────────────────────────────────────
+
 
 export interface QueuedMessage {
   uuid: string;
@@ -68,7 +65,7 @@ export interface QueuedMessage {
   synced: boolean;
 }
 
-// ─── API Responses ────────────────────────────────────────────────────────────
+
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -77,9 +74,9 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
-// ─── Socket Events ────────────────────────────────────────────────────────────
 
-// Client → Server
+
+
 export interface JoinStreamPayload {
   streamId: string;
   userId: string;
@@ -109,7 +106,7 @@ export interface EndStreamPayload {
   creatorId: string;
 }
 
-// Server → Client
+
 export interface ViewerCountPayload {
   streamId: string;
   count: number;

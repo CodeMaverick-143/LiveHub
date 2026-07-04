@@ -9,6 +9,8 @@ import { Config } from '@/constants/config';
 import { useAuthStore } from '@/store/authStore';
 import { generateUUID } from '@/utils/uuid';
 import { storage } from '@/utils/storage';
+import { useOfflineQueue } from './useOfflineQueue';
+import { offlineQueue } from '@/services/offlineQueue';
 
 export function useChat(streamId: string) {
   const { user } = useAuthStore();
@@ -16,8 +18,7 @@ export function useChat(streamId: string) {
   const [viewerCount, setViewerCount] = useState(0);
   const [isSending, setIsSending] = useState(false);
   const deviceIdRef = useRef<string>('');
-
-  
+  const { isOnline, enqueueMessage } = useOfflineQueue();
   useEffect(() => {
     (async () => {
       let id = await storage.get<string>(Config.DEVICE_ID_KEY);
@@ -29,13 +30,12 @@ export function useChat(streamId: string) {
     })();
   }, []);
 
-  
-  const { isLoading } = useQuery({
+
+  const chatQuery = useQuery({
     queryKey: ['chat', streamId],
     queryFn: async () => {
       const res = await fetchChatApi(streamId);
       if (res.success && res.data) {
-        setMessages(res.data);
         return res.data;
       }
       return [];
@@ -43,7 +43,31 @@ export function useChat(streamId: string) {
     enabled: !!streamId,
   });
 
-  
+  useEffect(() => {
+    const dbMessages = chatQuery.data ?? [];
+    const pending = offlineQueue.getPending()
+      .filter((m) => m.streamId === streamId)
+      .map((m) => ({
+        id: m.uuid,
+        streamId: m.streamId,
+        senderId: m.senderId,
+        senderName: m.senderName,
+        message: m.message,
+        createdAt: m.createdAt,
+        uuid: m.uuid,
+        deviceId: m.deviceId,
+        synced: false,
+        pending: true,
+      }));
+    setMessages([...dbMessages, ...pending].slice(-Config.CHAT_MAX));
+  }, [chatQuery.data, streamId]);
+
+  useEffect(() => {
+    if (isOnline) {
+      chatQuery.refetch();
+    }
+  }, [isOnline, chatQuery]);
+
   useEffect(() => {
     if (!streamId || !user) return;
 
@@ -86,7 +110,6 @@ export function useChat(streamId: string) {
 
       const uuid = generateUUID();
 
-      
       const optimistic: ChatMessage = {
         id: uuid,
         streamId,
@@ -103,6 +126,23 @@ export function useChat(streamId: string) {
       setMessages((prev) => [...prev, optimistic]);
       setIsSending(true);
 
+      if (!isOnline) {
+        const queued = {
+          id: uuid,
+          streamId,
+          senderId: user.id,
+          senderName: user.username,
+          message: text.trim(),
+          createdAt: optimistic.createdAt,
+          uuid,
+          deviceId: deviceIdRef.current,
+          synced: false,
+        };
+        await enqueueMessage(queued);
+        setIsSending(false);
+        return true;
+      }
+
       try {
         const res = await sendMessageApi({
           streamId,
@@ -113,33 +153,57 @@ export function useChat(streamId: string) {
           deviceId: deviceIdRef.current,
         });
 
-        
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === uuid
-              ? { ...m, synced: true, pending: false, id: res.data?.id ?? uuid }
-              : m
-          )
-        );
+        if (res.success) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === uuid
+                ? { ...m, synced: true, pending: false, id: res.data?.id ?? uuid }
+                : m
+            )
+          );
+          return true;
+        } else {
 
-        return res.success;
+          const queued = {
+            id: uuid,
+            streamId,
+            senderId: user.id,
+            senderName: user.username,
+            message: text.trim(),
+            createdAt: optimistic.createdAt,
+            uuid,
+            deviceId: deviceIdRef.current,
+            synced: false,
+          };
+          await enqueueMessage(queued);
+          return false;
+        }
       } catch {
-        
-        setMessages((prev) =>
-          prev.map((m) => (m.id === uuid ? { ...m, pending: false, synced: false } : m))
-        );
+
+        const queued = {
+          id: uuid,
+          streamId,
+          senderId: user.id,
+          senderName: user.username,
+          message: text.trim(),
+          createdAt: optimistic.createdAt,
+          uuid,
+          deviceId: deviceIdRef.current,
+          synced: false,
+        };
+        await enqueueMessage(queued);
         return false;
       } finally {
         setIsSending(false);
       }
     },
-    [user, streamId]
+    [user, streamId, isOnline, enqueueMessage]
   );
 
   return {
     messages,
     viewerCount,
-    isLoading,
+    isLoading: chatQuery.isLoading,
     isSending,
     sendMessage,
   };

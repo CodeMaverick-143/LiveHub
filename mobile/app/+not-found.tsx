@@ -14,15 +14,15 @@ export default function NotFoundScreen() {
         colors={['#0a0a0a', '#1a1a1a']}
         style={StyleSheet.absoluteFillObject}
       />
-      
+
       <View style={styles.content}>
         <MaterialIcons name="photo-camera" size={80} color="#FFD700" />
         <Text style={styles.title}>Page Not Found</Text>
         <Text style={styles.message}>
           The moment you&apos;re looking for seems to have been lost in the shadows.
         </Text>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={styles.homeButton}
           onPress={() => router.push('/')}
         >

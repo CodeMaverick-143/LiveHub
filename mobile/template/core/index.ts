@@ -2,8 +2,8 @@
 
 export * from './types';
 export { configManager, createConfig } from './config';
-export { 
-  getSharedSupabaseClient, 
+export {
+  getSharedSupabaseClient,
   getSharedSupabaseClient as getSupabaseClient,
-  safeSupabaseOperation 
+  safeSupabaseOperation
 } from './client';

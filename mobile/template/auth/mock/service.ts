@@ -22,7 +22,7 @@ interface MockSession {
 }
 
 export class MockAuthService {
-  
+
   async sendOTP(email: string, options: SendOTPOptions = {}) {
     await new Promise(resolve => setTimeout(resolve, 500));
     return {};
@@ -30,50 +30,50 @@ export class MockAuthService {
 
   async signUpWithPassword(email: string, password: string, metadata: Record<string, any> = {}) {
     await new Promise(resolve => setTimeout(resolve, 800));
-    
+
     let user = await this.findUserByEmail(email);
     if (user) {
-      return { 
+      return {
         error: 'User already registered',
         errorType: 'business' as const
       };
     }
-    
+
     user = await this.createUser(email, metadata.username);
     await this.createSession(user.id);
-    
+
     return { user };
   }
 
   async signInWithPassword(email: string, password: string) {
     await new Promise(resolve => setTimeout(resolve, 600));
-    
+
     let user = await this.findUserByEmail(email);
     if (!user) {
-      return { 
+      return {
         error: 'No account found with this email',
         user: null,
         errorType: 'business' as const
       };
     }
-    
+
     await this.createSession(user.id);
     return { user };
   }
 
   async verifyOTPAndLogin(email: string, otp: string, options?: { password?: string; metadata?: Record<string, any> }) {
     await new Promise(resolve => setTimeout(resolve, 800));
-    
+
     let user = await this.findUserByEmail(email);
     if (!user) {
       const username = options?.metadata?.username || email.split('@')[0];
       user = await this.createUser(email, username);
     }
-    
+
     if (options?.password) {
       console.log(`[SDK:MockAuth] OTP+Password registration for ${email}`);
     }
-    
+
     await this.createSession(user.id);
     return { user };
   }
@@ -87,21 +87,21 @@ export class MockAuthService {
   async getCurrentUser(): Promise<AuthUser | null> {
     const sessionData = await AsyncStorage.getItem(MOCK_STORAGE_KEYS.CURRENT_SESSION);
     if (!sessionData) return null;
-    
+
     const session: MockSession = JSON.parse(sessionData);
-    
+
     if (session.expiresAt < Date.now()) {
       await AsyncStorage.removeItem(MOCK_STORAGE_KEYS.CURRENT_SESSION);
       return null;
     }
-    
+
     return await this.findUserById(session.userId);
   }
 
   async refreshSession() {
     const sessionData = await AsyncStorage.getItem(MOCK_STORAGE_KEYS.CURRENT_SESSION);
     if (!sessionData) return;
-    
+
     const session: MockSession = JSON.parse(sessionData);
     session.expiresAt = Date.now() + 24 * 60 * 60 * 1000;
     await AsyncStorage.setItem(MOCK_STORAGE_KEYS.CURRENT_SESSION, JSON.stringify(session));
@@ -110,12 +110,12 @@ export class MockAuthService {
   onAuthStateChange(callback: (user: AuthUser | null) => void) {
     let intervalId: NodeJS.Timeout;
     let lastUser: AuthUser | null = null;
-    
+
     const checkAuthState = async () => {
       try {
         const currentUser = await this.getCurrentUser();
         const userChanged = JSON.stringify(currentUser) !== JSON.stringify(lastUser);
-        
+
         if (userChanged) {
           lastUser = currentUser;
           callback(currentUser);
@@ -124,10 +124,10 @@ export class MockAuthService {
         console.warn('[SDK:MockAuthService] Error in auth state check:', error);
       }
     };
-    
+
     checkAuthState();
     intervalId = setInterval(checkAuthState, 2000);
-    
+
     return {
       unsubscribe: () => {
         if (intervalId) {
@@ -165,13 +165,13 @@ export class MockAuthService {
 
   private async createUser(email: string, username?: string): Promise<AuthUser> {
     const users = await this.getUsers();
-    
+
     const generateTestUUID = () => {
       const userCount = users.length;
       const incrementalId = userCount.toString().padStart(12, '0');
       return `00000000-0000-0000-0000-${incrementalId}`;
     };
-    
+
     const newUser: MockUser = {
       id: generateTestUUID(),
       email,
@@ -179,10 +179,10 @@ export class MockAuthService {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
-    
+
     users.push(newUser);
     await this.saveUsers(users);
-    
+
     return {
       id: newUser.id,
       email: newUser.email,
@@ -198,7 +198,7 @@ export class MockAuthService {
       token: `mock_token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       expiresAt: Date.now() + 24 * 60 * 60 * 1000,
     };
-    
+
     await AsyncStorage.setItem(MOCK_STORAGE_KEYS.CURRENT_SESSION, JSON.stringify(session));
   }
 
@@ -216,7 +216,7 @@ export class MockAuthService {
     const users = await this.getUsers();
     const sessionData = await AsyncStorage.getItem(MOCK_STORAGE_KEYS.CURRENT_SESSION);
     const currentSession = sessionData ? JSON.parse(sessionData) : null;
-    
+
     return { users, currentSession };
   }
 }

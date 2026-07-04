@@ -19,7 +19,7 @@ export interface Stream {
   livekitRoom: string;
   status: string;
   viewerCount: number;
-  startedAt: string;   
+  startedAt: string;
   endedAt?: string | null;
   category: string;
   livekitToken?: string;

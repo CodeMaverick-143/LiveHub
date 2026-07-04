@@ -25,7 +25,7 @@ export const ChatBubble = React.memo(function ChatBubble({ message, isOwn }: Cha
 
   return (
     <View style={[styles.row, isOwn && styles.rowOwn]}>
-      {}
+
       {!isOwn ? (
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{message.senderName.charAt(0).toUpperCase()}</Text>

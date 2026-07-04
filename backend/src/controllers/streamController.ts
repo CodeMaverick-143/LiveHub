@@ -24,7 +24,7 @@ export async function startStream(req: Request, res: Response) {
     const roomName = `room_${creatorId}_${Date.now()}`;
     const livekitRoom = `lk_${roomName}`;
 
-    
+
     const stream = await prisma.stream.create({
       data: {
         creatorId,
@@ -38,7 +38,7 @@ export async function startStream(req: Request, res: Response) {
       },
     });
 
-    
+
     let livekitToken = '';
     if (LIVEKIT_API_KEY && LIVEKIT_API_SECRET) {
       const at = new AccessToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, {
@@ -93,7 +93,7 @@ export async function getStreamDetail(req: Request, res: Response) {
       return res.status(404).json({ success: false, error: 'Stream not found' });
     }
 
-    
+
     const viewerId = `viewer_${Math.random().toString(36).slice(2, 9)}`;
     const viewerName = `Viewer_${Math.random().toString(36).slice(2, 5)}`;
     let livekitToken = '';

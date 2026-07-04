@@ -77,7 +77,7 @@ export default function LoginScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {}
+
         <View style={styles.header}>
           <View style={styles.logoIconContainer}>
             <MaterialIcons name="explore" size={32} color={Colors.primary} />
@@ -86,9 +86,9 @@ export default function LoginScreen() {
           <Text style={styles.tagline}>Go live. Connect. Broadcast.</Text>
         </View>
 
-        {}
+
         <View style={styles.card}>
-          {}
+
           <View style={styles.demoBadge}>
             <View style={styles.demoDot} />
             <Text style={styles.demoText}>Demo Mode — any credentials work</Text>
@@ -96,7 +96,7 @@ export default function LoginScreen() {
 
           <Text style={styles.formTitle}>Sign In</Text>
 
-          {}
+
           <View style={styles.roleRow}>
             {ROLES.map((r) => (
               <Pressable
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
   },
 
-  
+
   header: {
     alignItems: 'center',
     marginBottom: Spacing.xl,
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
 
-  
+
   card: {
     backgroundColor: Colors.surface,
     borderRadius: Radius.lg,
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
 
-  
+
   roleRow: {
     flexDirection: 'row',
     gap: Spacing.sm,

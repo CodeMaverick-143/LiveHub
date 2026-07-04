@@ -7,7 +7,7 @@ import { useAuthContext } from './context';
 
 export function useAuth(): AuthContextType {
   const context = useAuthContext();
-  
+
   const isAuthEnabled = configManager.isModuleEnabled('auth');
   if (!isAuthEnabled) {
     return {
@@ -16,28 +16,28 @@ export function useAuth(): AuthContextType {
       operationLoading: false,
       initialized: true,
       setOperationLoading: () => {},
-      sendOTP: async (): Promise<SendOTPResult> => ({ 
-        error: 'Auth function not enabled, please check configuration' 
+      sendOTP: async (): Promise<SendOTPResult> => ({
+        error: 'Auth function not enabled, please check configuration'
       }),
-      verifyOTPAndLogin: async (): Promise<AuthResult> => ({ 
-        error: 'Auth function not enabled, please check configuration', 
-        user: null 
+      verifyOTPAndLogin: async (): Promise<AuthResult> => ({
+        error: 'Auth function not enabled, please check configuration',
+        user: null
       }),
-      signUpWithPassword: async (): Promise<SignUpResult> => ({ 
-        error: 'Auth function not enabled, please check configuration', 
-        user: null 
+      signUpWithPassword: async (): Promise<SignUpResult> => ({
+        error: 'Auth function not enabled, please check configuration',
+        user: null
       }),
-      signInWithPassword: async (): Promise<AuthResult> => ({ 
-        error: 'Auth function not enabled, please check configuration', 
-        user: null 
+      signInWithPassword: async (): Promise<AuthResult> => ({
+        error: 'Auth function not enabled, please check configuration',
+        user: null
       }),
-      signInWithGoogle: async (): Promise<GoogleSignInResult> => ({ 
+      signInWithGoogle: async (): Promise<GoogleSignInResult> => ({
         error: 'Auth function not enabled, please check configuration'
       }),
       logout: async (): Promise<LogoutResult> => {
         console.warn('Auth function not enabled');
-        return { 
-          error: 'Auth function not enabled, please check configuration' 
+        return {
+          error: 'Auth function not enabled, please check configuration'
         };
       },
       refreshSession: async () => {
@@ -53,8 +53,8 @@ export function useAuth(): AuthContextType {
       return result;
     } catch (error) {
       console.warn('[Template:useAuth] sendOTP exception:', error);
-      return { 
-        error: 'Failed to send verification code' 
+      return {
+        error: 'Failed to send verification code'
       };
     } finally {
       context.setOperationLoading(false);
@@ -68,9 +68,9 @@ export function useAuth(): AuthContextType {
       return result;
     } catch (error) {
       console.warn('[Template:useAuth] verifyOTPAndLogin exception:', error);
-      return { 
+      return {
         error: 'Login failed',
-        user: null 
+        user: null
       };
     } finally {
       context.setOperationLoading(false);
@@ -84,9 +84,9 @@ export function useAuth(): AuthContextType {
       return result;
     } catch (error) {
       console.warn('[Template:useAuth] signUpWithPassword exception:', error);
-      return { 
+      return {
         error: 'Registration failed',
-        user: null 
+        user: null
       };
     } finally {
       context.setOperationLoading(false);
@@ -100,9 +100,9 @@ export function useAuth(): AuthContextType {
       return result;
     } catch (error) {
       console.warn('[Template:useAuth] signInWithPassword exception:', error);
-      return { 
+      return {
         error: 'Login failed',
-        user: null 
+        user: null
       };
     } finally {
       context.setOperationLoading(false);
@@ -113,12 +113,12 @@ export function useAuth(): AuthContextType {
     context.setOperationLoading(true);
     try {
       const result = await authService.logout();
-      
+
       if (!result) {
         console.warn('[Template:useAuth] Invalid logout result format:', result);
         return { error: 'Invalid logout response' };
       }
-      
+
       return result;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown logout error';
@@ -144,7 +144,7 @@ export function useAuth(): AuthContextType {
       return result;
     } catch (error) {
       console.warn('[Template:useAuth] signInWithGoogle exception:', error);
-      return { 
+      return {
         error: 'Google login failed'
       };
     } finally {

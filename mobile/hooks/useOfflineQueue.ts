@@ -20,21 +20,21 @@ export function useOfflineQueue() {
     lastSyncResult: null,
   });
 
-  
+
   useEffect(() => {
     offlineQueue.load().then(() => {
       setState((prev) => ({ ...prev, pendingCount: offlineQueue.pendingCount }));
     });
   }, []);
 
-  
+
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(async (netState: NetInfoState) => {
       const isOnline = !!(netState.isConnected && netState.isInternetReachable);
 
       setState((prev) => ({ ...prev, isOnline }));
 
-      
+
       if (isOnline && offlineQueue.pendingCount > 0) {
         setState((prev) => ({ ...prev, isSyncing: true }));
         const result = await offlineQueue.sync();

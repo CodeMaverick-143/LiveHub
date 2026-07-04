@@ -29,15 +29,15 @@ export function AlertProvider({ children }: AlertProviderProps) {
     message?: string,
     buttons?: AlertButton[]
   ) => {
-    
+
     const normalizedMessage = message || '';
-    const normalizedButtons = buttons?.length ? buttons : [{ 
+    const normalizedButtons = buttons?.length ? buttons : [{
       text: 'OK',
       onPress: () => {}
     }];
 
     if (Platform.OS === 'web') {
-      
+
       setAlertState({
         visible: true,
         title,
@@ -45,13 +45,13 @@ export function AlertProvider({ children }: AlertProviderProps) {
         buttons: normalizedButtons
       });
     } else {
-      
+
       const alertButtons = normalizedButtons.map(button => ({
         text: button.text,
         onPress: button.onPress,
         style: button.style
       }));
-      
+
       Alert.alert(title, normalizedMessage, alertButtons);
     }
   };
@@ -62,11 +62,11 @@ export function AlertProvider({ children }: AlertProviderProps) {
 
   const handleButtonPress = (button: AlertButton) => {
     try {
-      
+
       if (typeof button.onPress === 'function') {
         button.onPress();
       }
-      
+
       hideAlert();
     } catch (error) {
       console.warn('[Template:AlertProvider] Button press error:', error);
@@ -95,11 +95,11 @@ export function AlertProvider({ children }: AlertProviderProps) {
 
 export function useAlertContext(): AlertContextType {
   const context = useContext(AlertContext);
-  
+
   if (context === undefined) {
     throw new Error('useAlertContext must be used within an AlertProvider');
   }
-  
+
   return context;
 }
 
@@ -123,19 +123,19 @@ function WebAlertModal({ alertState, onButtonPress, onHide }: WebAlertModalProps
     return null;
   }
 
-  
+
   const getButtonStyle = (button: AlertButton, index: number) => {
     const isLast = index === alertState.buttons.length - 1;
     const baseStyle = [styles.button];
-    
+
     if (alertState.buttons.length > 1 && !isLast) {
       baseStyle.push(styles.buttonWithBorder);
     }
-    
+
     return baseStyle;
   };
 
-  
+
   const getButtonTextStyle = (button: AlertButton) => {
     switch (button.style) {
       case 'cancel':
@@ -157,11 +157,11 @@ function WebAlertModal({ alertState, onButtonPress, onHide }: WebAlertModalProps
               <Text style={styles.message}>{alertState.message}</Text>
             ) : null}
           </View>
-          
+
           <View style={styles.buttonContainer}>
             {alertState.buttons.length === 1 ? (
-              
-              <TouchableOpacity 
+
+              <TouchableOpacity
                 style={[styles.button, styles.singleButton]}
                 onPress={() => onButtonPress(alertState.buttons[0])}
                 activeOpacity={0.8}
@@ -171,7 +171,7 @@ function WebAlertModal({ alertState, onButtonPress, onHide }: WebAlertModalProps
                 </Text>
               </TouchableOpacity>
             ) : (
-              
+
               <View style={styles.multiButtonContainer}>
                 {alertState.buttons.map((button, index) => (
                   <TouchableOpacity

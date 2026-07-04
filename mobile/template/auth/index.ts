@@ -9,6 +9,6 @@ export { AuthProvider } from './supabase/context';
 
 
 export { useMockAuth, useMockAuthDebug } from './mock/hook';
-export { mockAuthService } from './mock/service';  
+export { mockAuthService } from './mock/service';
 export { MockAuthRouter } from './mock/router';
 export { MockAuthProvider } from './mock/context';

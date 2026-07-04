@@ -34,7 +34,7 @@ export interface SignUpResult extends BaseResult {
 
 
 export interface VerifyOTPOptions {
-  password?: string;  
+  password?: string;
 }
 
 

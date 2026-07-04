@@ -26,6 +26,7 @@ import { Colors, Spacing, Typography, Radius, Shadows } from '@/constants/theme'
 import { formatViewerCount, formatDuration } from '@/utils/format';
 import { useAuthStore } from '@/store/authStore';
 import { socketService } from '@/services/socketService';
+import { useOfflineQueue } from '@/hooks/useOfflineQueue';
 
 let LiveKitRoom: any = null;
 let VideoView: any = null;
@@ -39,7 +40,7 @@ try {
   useTracks = livekit.useTracks;
   webRTCAvailable = true;
 } catch (_e) {
-  
+
 }
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -75,20 +76,30 @@ export default function WatchStreamScreen() {
 
   const { data: stream } = useStream(id);
   const { messages, viewerCount, isLoading: chatLoading, isSending, sendMessage } = useChat(id);
+  const { isOnline } = useOfflineQueue();
 
   const [input, setInput] = useState('');
   const [toast, setToast] = useState<string | null>(null);
   const [streamEnded, setStreamEnded] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
-  
+
+  useEffect(() => {
+    if (!isOnline) {
+      setToast('You are offline. Sending messages will queue them.');
+    } else {
+      setToast(null);
+    }
+  }, [isOnline]);
+
+
   useEffect(() => {
     if (!id) return;
 
     const handleStreamEnded = (payload: { streamId: string }) => {
       if (payload.streamId === id) {
         setStreamEnded(true);
-        
+
         setTimeout(() => {
           router.back();
         }, 3000);
@@ -101,7 +112,7 @@ export default function WatchStreamScreen() {
     };
   }, [id, router]);
 
-  
+
   useEffect(() => {
     if (messages.length > 0) {
       setTimeout(() => {
@@ -115,7 +126,7 @@ export default function WatchStreamScreen() {
     if (!text) return;
     setInput('');
     const ok = await sendMessage(text);
-    if (!ok) setToast('Failed to send message');
+    if (!ok && isOnline) setToast('Failed to send message');
   };
 
   return (
@@ -124,7 +135,7 @@ export default function WatchStreamScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={0}
     >
-      {}
+
       <View style={[styles.videoArea, { height: VIDEO_HEIGHT }]}>
         {webRTCAvailable && stream?.livekitToken ? (
           <LiveKitRoom
@@ -155,7 +166,7 @@ export default function WatchStreamScreen() {
         )}
         <View style={styles.videoOverlay} />
 
-        {}
+
         <Pressable
           style={[styles.backBtn, { top: Spacing.sm }]}
           onPress={() => router.back()}
@@ -165,10 +176,13 @@ export default function WatchStreamScreen() {
           <MaterialIcons name="arrow-back" size={22} color="#fff" />
         </Pressable>
 
-        {}
         <View style={styles.topBadges}>
-          <Badge variant="live" label="LIVE" />
-          {viewerCount > 0 ? (
+          {isOnline ? (
+            <Badge variant="live" label="LIVE" />
+          ) : (
+            <Badge variant="pending" label="Offline" icon="cloud-off" />
+          )}
+          {isOnline && viewerCount > 0 ? (
             <Badge
               variant="viewers"
               label={formatViewerCount(viewerCount)}
@@ -177,7 +191,7 @@ export default function WatchStreamScreen() {
           ) : null}
         </View>
 
-        {}
+
         <View style={styles.streamInfo}>
           {stream ? (
             <>
@@ -193,7 +207,7 @@ export default function WatchStreamScreen() {
         </View>
       </View>
 
-      {}
+
       <View style={styles.chatSection}>
         <View style={styles.chatHeader}>
           <MaterialIcons name="chat" size={16} color={Colors.textSecondary} />
@@ -222,7 +236,7 @@ export default function WatchStreamScreen() {
           />
         )}
 
-        {}
+
         <View
           style={[
             styles.inputRow,
@@ -262,7 +276,7 @@ export default function WatchStreamScreen() {
         <Toast message={toast} variant="error" onDismiss={() => setToast(null)} />
       ) : null}
 
-      {}
+
       {streamEnded ? (
         <View style={styles.streamEndedOverlay}>
           <View style={styles.streamEndedCard}>
@@ -282,7 +296,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
 
-  
+
   videoArea: {
     width: '100%',
     backgroundColor: '#000',
@@ -343,7 +357,7 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
 
-  
+
   chatSection: {
     flex: 1,
     backgroundColor: Colors.surface,
@@ -375,7 +389,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
   },
 
-  
+
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',

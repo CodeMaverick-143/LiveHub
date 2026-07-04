@@ -13,9 +13,9 @@ interface StreamStore {
   isStreaming: boolean;
   isLoading: boolean;
   error: string | null;
-  duration: number; 
+  duration: number;
 
-  
+
   startStream: (payload: {
     creatorId: string;
     creatorName: string;

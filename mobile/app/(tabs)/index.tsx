@@ -52,7 +52,7 @@ export default function BrowseScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      {}
+
       <View style={styles.header}>
         <View>
           <View style={styles.greetingRow}>
@@ -70,7 +70,7 @@ export default function BrowseScreen() {
         </View>
       </View>
 
-      {}
+
       <View style={styles.searchContainer}>
         <MaterialIcons name="search" size={20} color={Colors.textMuted} />
         <TextInput
@@ -88,7 +88,7 @@ export default function BrowseScreen() {
         ) : null}
       </View>
 
-      {}
+
       <View style={styles.categoryOuter}>
         <FlatList
           horizontal
@@ -113,7 +113,7 @@ export default function BrowseScreen() {
         />
       </View>
 
-      {}
+
       {isLoading ? (
         <FlatList
           data={[1, 2, 3]}
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-  
+
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
 
-  
+
   categoryOuter: {
     height: 44,
     marginBottom: Spacing.sm,
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
     fontWeight: Typography.semibold,
   },
 
-  
+
   listContent: {
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.xl,

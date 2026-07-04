@@ -18,7 +18,7 @@ class ConfigManager {
     if (this.config) {
       console.warn('[Template:Config] Configuration already set, updating...');
     }
-    
+
     this.config = { ...config };
   }
 

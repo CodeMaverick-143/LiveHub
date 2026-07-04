@@ -12,7 +12,7 @@ export function useStreams() {
       if (!res.success) throw new Error(res.error);
       return res.data ?? [];
     },
-    refetchInterval: 15000, 
+    refetchInterval: 15000,
     staleTime: 5000,
   });
 }

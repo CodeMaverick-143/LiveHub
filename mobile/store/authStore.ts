@@ -13,7 +13,7 @@ interface AuthStore {
   isLoading: boolean;
   error: string | null;
 
-  
+
   login: (payload: LoginPayload) => Promise<boolean>;
   logout: () => Promise<void>;
   restoreSession: () => Promise<void>;

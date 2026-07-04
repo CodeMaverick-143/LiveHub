@@ -20,7 +20,7 @@ export function StreamCard({ stream, onPress }: StreamCardProps) {
       onPress={onPress}
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
     >
-      {}
+
       <View style={styles.thumbnailContainer}>
         <Image
           source={{ uri: stream.thumbnailUrl ?? 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&q=80' }}
@@ -28,20 +28,20 @@ export function StreamCard({ stream, onPress }: StreamCardProps) {
           contentFit="cover"
           transition={200}
         />
-        {}
+
         <View style={styles.overlay} />
 
-        {}
+
         <View style={styles.liveBadge}>
           <Badge variant="live" label="LIVE" />
         </View>
 
-        {}
+
         <View style={styles.durationBadge}>
           <Text style={styles.duration}>{formatDuration(stream.startedAt)}</Text>
         </View>
 
-        {}
+
         <View style={styles.viewerRow}>
           <MaterialIcons name="visibility" size={14} color="#fff" />
           <Text style={styles.viewerText}>
@@ -50,10 +50,10 @@ export function StreamCard({ stream, onPress }: StreamCardProps) {
         </View>
       </View>
 
-      {}
+
       <View style={styles.info}>
         <View style={styles.infoTop}>
-          {}
+
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>
               {stream.creatorName.charAt(0).toUpperCase()}
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.99 }],
   },
 
-  
+
   thumbnailContainer: {
     height: 180,
     position: 'relative',
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
 
-  
+
   info: {
     padding: Spacing.md,
     gap: Spacing.sm,

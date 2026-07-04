@@ -46,15 +46,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     let authSubscription: any = null;
 
     const initializeAuth = async () => {
-      
+
       try {
         const currentUser = await authService.getCurrentUser();
-        
+
         if (isMounted) {
-          updateState({ 
-            user: currentUser, 
-            loading: false, 
-            initialized: true 
+          updateState({
+            user: currentUser,
+            loading: false,
+            initialized: true
           });
         }
 
@@ -67,10 +67,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } catch (error) {
         console.warn('[Template:AuthProvider] Auth initialization failed:', error);
         if (isMounted) {
-          updateState({ 
-            user: null, 
-            loading: false, 
-            initialized: true 
+          updateState({
+            user: null,
+            loading: false,
+            initialized: true
           });
         }
       }
@@ -84,7 +84,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         authSubscription.unsubscribe();
       }
     };
-  }, []); 
+  }, []);
   const contextValue: AuthContextType = {
     ...state,
     setOperationLoading,
@@ -100,10 +100,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 export function useAuthContext(): AuthContextType {
   const context = useContext(AuthContext);
-  
+
   if (context === undefined) {
     throw new Error('useAuthContext must be used within an AuthProvider');
   }
-  
+
   return context;
 }

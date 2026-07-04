@@ -38,11 +38,11 @@ class SocketService {
     return SocketService.instance;
   }
 
-  
+
   connect(): void {
     const currentToken = useAuthStore.getState().token;
 
-    
+
     if (this.socket && this.connectedToken !== currentToken) {
       console.log('[SocketService] Token changed, reconnecting socket...');
       this.disconnect();
@@ -64,7 +64,7 @@ class SocketService {
       this.connected = true;
       console.log('[SocketService] Connected to server successfully');
 
-      
+
       while (this.emitQueue.length > 0) {
         const item = this.emitQueue.shift();
         if (item && this.socket) {
@@ -73,7 +73,7 @@ class SocketService {
         }
       }
 
-      
+
       if (this.currentStreamId && this.socket) {
         console.log(`[SocketService] Auto-rejoining stream room: ${this.currentStreamId}`);
         this.socket.emit('join-stream', {
@@ -88,7 +88,7 @@ class SocketService {
       console.log('[SocketService] Disconnected from server');
     });
 
-    
+
     this.socket.on('viewer-count', (data: ViewerCountPayload) => {
       this._emitToListeners('viewer-count', data);
     });
@@ -106,7 +106,7 @@ class SocketService {
     });
   }
 
-  
+
   disconnect(): void {
     if (this.socket) {
       this.socket.disconnect();
@@ -116,7 +116,7 @@ class SocketService {
     this.connectedToken = undefined;
   }
 
-  
+
   emit(event: string, payload: any): void {
     if (this.socket && this.connected) {
       this.socket.emit(event, payload);
@@ -126,7 +126,7 @@ class SocketService {
     }
   }
 
-  
+
 
   joinStream(streamId: string, userId?: string): void {
     this.currentStreamId = streamId;
@@ -137,7 +137,7 @@ class SocketService {
   leaveStream(streamId: string, userId?: string): void {
     this.currentStreamId = null;
     this.currentUserId = null;
-    
+
     this.emitQueue = this.emitQueue.filter((item) => item.event !== 'join-stream');
     this.emit('leave-stream', { streamId, userId });
   }
@@ -153,7 +153,7 @@ class SocketService {
     this.emit('send-message', payload);
   }
 
-  
+
 
   on(event: 'viewer-count', cb: EventCallback<ViewerCountPayload>): void;
   on(event: 'receive-message', cb: EventCallback<ChatMessage>): void;

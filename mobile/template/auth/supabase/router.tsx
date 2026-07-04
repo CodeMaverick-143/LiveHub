@@ -33,7 +33,7 @@ export function AuthRouter({
     }
 
     const isLoginRoute = pathname === loginRoute;
-    const isExcludedRoute = excludeRoutes.some(route => 
+    const isExcludedRoute = excludeRoutes.some(route =>
       pathname.startsWith(route)
     );
 
@@ -52,10 +52,10 @@ export function AuthRouter({
   }
 
   const isLoginRoute = pathname === loginRoute;
-  const isExcludedRoute = excludeRoutes.some(route => 
+  const isExcludedRoute = excludeRoutes.some(route =>
     pathname.startsWith(route)
   );
-  
+
   if (isLoginRoute || isExcludedRoute || user) {
     return <>{children}</>;
   }

@@ -65,13 +65,13 @@ export default function CreatorScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {}
+
         <View style={styles.header}>
           <Text style={styles.title}>Creator Studio</Text>
           <Text style={styles.subtitle}>Ready to go live, {user?.username}?</Text>
         </View>
 
-        {}
+
         {isStreaming && activeStream ? (
           <View style={styles.activeBanner}>
             <View style={styles.activeLiveDot} />
@@ -90,7 +90,7 @@ export default function CreatorScreen() {
           </View>
         ) : null}
 
-        {}
+
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <MaterialIcons name="radio-button-on" size={22} color={Colors.live} />
@@ -129,7 +129,7 @@ export default function CreatorScreen() {
           />
         </View>
 
-        {}
+
         <View style={styles.tipsCard}>
           <Text style={styles.tipsTitle}>Stream Tips</Text>
           {[
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
 
-  
+
   activeBanner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
 
-  
+
   card: {
     backgroundColor: Colors.surface,
     borderRadius: Radius.md,
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
 
-  
+
   tipsCard: {
     backgroundColor: Colors.surface,
     borderRadius: Radius.md,

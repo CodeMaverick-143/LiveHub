@@ -14,8 +14,8 @@ try {
   const { registerGlobals } = require('@livekit/react-native');
   registerGlobals();
 } catch (_e) {
-  
-  
+
+
   console.warn('[LiveHub] WebRTC native module unavailable – streaming features require a dev build.');
 }
 

@@ -12,7 +12,7 @@ interface SocketUser {
 }
 
 export function registerSocketHandlers(io: Server) {
-  
+
   io.use((socket: Socket & { user?: SocketUser }, next) => {
     const token = socket.handshake.auth.token || socket.handshake.query.token;
 
@@ -30,7 +30,7 @@ export function registerSocketHandlers(io: Server) {
   io.on('connection', (socket: Socket & { user?: SocketUser }) => {
     console.log(`Socket connected: ${socket.id} (User: ${socket.user?.username || 'Guest'})`);
 
-    
+
     socket.on('join-stream', async (payload: { streamId: string; userId?: string }) => {
       const { streamId } = payload;
       if (!streamId) return;
@@ -40,7 +40,7 @@ export function registerSocketHandlers(io: Server) {
 
       const username = socket.user?.username || 'Guest';
 
-      
+
       io.to(streamId).emit('receive-message', {
         id: `sys_join_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         streamId,
@@ -51,13 +51,13 @@ export function registerSocketHandlers(io: Server) {
       });
 
       try {
-        
+
         const stream = await prisma.stream.update({
           where: { id: streamId },
           data: { viewerCount: { increment: 1 } },
         });
 
-        
+
         io.to(streamId).emit('viewer-count', {
           streamId,
           count: stream.viewerCount,
@@ -67,14 +67,14 @@ export function registerSocketHandlers(io: Server) {
       }
     });
 
-    
+
     socket.on('leave-stream', async (payload: { streamId: string; userId?: string }) => {
       const { streamId } = payload;
       if (!streamId) return;
 
       const username = socket.user?.username || 'Guest';
 
-      
+
       io.to(streamId).emit('receive-message', {
         id: `sys_leave_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         streamId,
@@ -88,7 +88,7 @@ export function registerSocketHandlers(io: Server) {
       console.log(`Socket ${socket.id} left room: ${streamId}`);
 
       try {
-        
+
         const stream = await prisma.stream.findUnique({
           where: { id: streamId },
         });
@@ -109,7 +109,7 @@ export function registerSocketHandlers(io: Server) {
       }
     });
 
-    
+
     socket.on(
       'send-message',
       async (payload: {
@@ -127,7 +127,7 @@ export function registerSocketHandlers(io: Server) {
         }
 
         try {
-          
+
           let msg = await prisma.chatMessage.findUnique({
             where: { uuid },
           });
@@ -145,7 +145,7 @@ export function registerSocketHandlers(io: Server) {
             });
           }
 
-          
+
           io.to(streamId).emit('receive-message', msg);
         } catch (err) {
           console.error('Error processing socket message:', err);
@@ -153,12 +153,12 @@ export function registerSocketHandlers(io: Server) {
       }
     );
 
-    
+
     socket.on('disconnecting', async () => {
       const username = socket.user?.username || 'Guest';
       for (const room of socket.rooms) {
         if (room !== socket.id) {
-          
+
           io.to(room).emit('receive-message', {
             id: `sys_leave_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
             streamId: room,

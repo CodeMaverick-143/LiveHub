@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
 
-  
+
   primary: {
     backgroundColor: Colors.primary,
     ...Shadows.sm,
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
 
-  
+
   size_sm: {
     paddingHorizontal: Spacing.sm + 4,
     minHeight: 36,
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     minHeight: 52,
   },
 
-  
+
   text: {
     fontWeight: Typography.semibold,
     includeFontPadding: false,

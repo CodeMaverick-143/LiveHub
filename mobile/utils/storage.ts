@@ -16,7 +16,7 @@ export const storage = {
     try {
       await AsyncStorage.setItem(key, JSON.stringify(value));
     } catch {
-      
+
     }
   },
 
