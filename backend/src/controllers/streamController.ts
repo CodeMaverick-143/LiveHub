@@ -1,8 +1,14 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { AccessToken } from 'livekit-server-sdk';
+import { Server } from 'socket.io';
 
 const prisma = new PrismaClient();
+
+let _io: Server | null = null;
+export function setStreamIo(io: Server) {
+  _io = io;
+}
 
 const LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY || '';
 const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET || '';
@@ -149,6 +155,10 @@ export async function endStream(req: Request, res: Response) {
         viewerCount: 0,
       },
     });
+
+    if (_io) {
+      _io.to(streamId).emit('stream-ended', { streamId });
+    }
 
     return res.json({ success: true, data: { ended: true } });
   } catch (error: any) {
