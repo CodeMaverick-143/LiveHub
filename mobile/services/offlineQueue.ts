@@ -53,7 +53,7 @@ class OfflineQueueService {
           senderName: msg.senderName,
           message: msg.message,
           uuid: msg.uuid,
-          deviceId: msg.deviceId,
+          deviceId: msg.deviceId || undefined,
         });
 
         if (res.success) {

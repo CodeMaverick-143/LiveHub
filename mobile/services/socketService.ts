@@ -24,6 +24,10 @@ class SocketService {
     'stream-ended': [],
   };
   private connected = false;
+  private connectedToken: string | null | undefined = undefined;
+  private currentStreamId: string | null = null;
+  private currentUserId: string | null = null;
+  private emitQueue: { event: string; payload: any }[] = [];
 
   private constructor() {}
 
@@ -36,21 +40,47 @@ class SocketService {
 
   
   connect(): void {
+    const currentToken = useAuthStore.getState().token;
+
+    
+    if (this.socket && this.connectedToken !== currentToken) {
+      console.log('[SocketService] Token changed, reconnecting socket...');
+      this.disconnect();
+    }
+
     if (this.connected || this.socket) return;
 
-    const token = useAuthStore.getState().token;
-    if (!token) {
+    this.connectedToken = currentToken;
+    if (!currentToken) {
       console.warn('[SocketService] Missing auth token, connecting as guest');
     }
 
     this.socket = io(Config.SOCKET_URL, {
-      auth: { token },
+      auth: { token: currentToken },
       transports: ['websocket'],
     });
 
     this.socket.on('connect', () => {
       this.connected = true;
       console.log('[SocketService] Connected to server successfully');
+
+      
+      while (this.emitQueue.length > 0) {
+        const item = this.emitQueue.shift();
+        if (item && this.socket) {
+          console.log(`[SocketService] Flushing queued event "${item.event}"`);
+          this.socket.emit(item.event, item.payload);
+        }
+      }
+
+      
+      if (this.currentStreamId && this.socket) {
+        console.log(`[SocketService] Auto-rejoining stream room: ${this.currentStreamId}`);
+        this.socket.emit('join-stream', {
+          streamId: this.currentStreamId,
+          userId: this.currentUserId,
+        });
+      }
     });
 
     this.socket.on('disconnect', () => {
@@ -83,6 +113,7 @@ class SocketService {
       this.socket = null;
     }
     this.connected = false;
+    this.connectedToken = undefined;
   }
 
   
@@ -90,17 +121,24 @@ class SocketService {
     if (this.socket && this.connected) {
       this.socket.emit(event, payload);
     } else {
-      console.warn(`[SocketService] Cannot emit event "${event}". Socket is not connected.`);
+      console.log(`[SocketService] Socket not connected. Queuing event "${event}"`);
+      this.emitQueue.push({ event, payload });
     }
   }
 
   
 
   joinStream(streamId: string, userId?: string): void {
+    this.currentStreamId = streamId;
+    this.currentUserId = userId || null;
     this.emit('join-stream', { streamId, userId });
   }
 
   leaveStream(streamId: string, userId?: string): void {
+    this.currentStreamId = null;
+    this.currentUserId = null;
+    
+    this.emitQueue = this.emitQueue.filter((item) => item.event !== 'join-stream');
     this.emit('leave-stream', { streamId, userId });
   }
 
