@@ -7,7 +7,7 @@ import { AlertProvider } from '@/template';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { useAuthStore } from '@/store/authStore';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import GestureProvider from '@/components/providers/GestureProvider';
 import { StyleSheet } from 'react-native';
 import { Colors } from '@/constants/theme';
 import { registerGlobals } from '@livekit/react-native';
@@ -37,7 +37,7 @@ export default function RootLayout() {
   return (
     <AlertProvider>
       <SafeAreaProvider>
-        <GestureHandlerRootView style={styles.root}>
+        <GestureProvider>
           <QueryClientProvider client={queryClient}>
             <AppInitializer>
               <StatusBar style="light" />
@@ -56,7 +56,7 @@ export default function RootLayout() {
               </Stack>
             </AppInitializer>
           </QueryClientProvider>
-        </GestureHandlerRootView>
+        </GestureProvider>
       </SafeAreaProvider>
     </AlertProvider>
   );
